@@ -1,3 +1,4 @@
+<%@ page import="java.util.Map" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,12 +7,16 @@
     <body>
         <h1>Product List</h1>
         <a href="<c:url value="/shop?action=viewCart" />">View Cart</a><br /><br />
-        <c:forEach var="product" items="${products}">
-            <c:url value="shop" var="myURL">
-                <c:param name="action" value="addToCart" />
-                <c:param name="productId" value="${product.key}" />
-            </c:url>
-            <a href="${myURL}">${product.value}</a><br />
-        </c:forEach>
+        <%
+            @SuppressWarnings("unchecked")
+            Map<Integer, String> products =
+                   (Map<Integer, String>) request.getAttribute("products");
+
+            for (int id : products.keySet()) {
+        %><a href="<c:url value="shop">
+               <c:param name="action" value="addToCart" />
+               <c:param name="productId" value="<%= Integer.toString(id) %>" />
+           </c:url>"><%= products.get(id) %></a><br />
+        <% } %>
     </body>
 </html>
