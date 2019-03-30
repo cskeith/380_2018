@@ -1,16 +1,34 @@
 package ouhk.comps380f.model;
 
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
-public class Ticket {
+@Entity
+public class Ticket implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "name")
     private String customerName;
+
     private String subject;
+
     private String body;
-    private Map<String, Attachment> attachments = new Hashtable<>();
+
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attachment> attachments = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -44,27 +62,18 @@ public class Ticket {
         this.body = body;
     }
 
-    public Attachment getAttachment(String name) {
-        return this.attachments.get(name);
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public Collection<Attachment> getAttachments() {
-        return this.attachments.values();
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
-
-    public void addAttachment(Attachment attachment) {
-        this.attachments.put(attachment.getName(), attachment);
-    }
-
-    public int getNumberOfAttachments() {
-        return this.attachments.size();
-    }
-
-    public boolean hasAttachment(String name) {
-        return this.attachments.containsKey(name);
-    }
-
-    public Attachment deleteAttachment(String name) {
-        return this.attachments.remove(name);
+    
+    public void deleteAttachment(Attachment attachment) {
+        attachment.setTicket(null);
+        this.attachments.remove(attachment);
     }
 }
+
+
