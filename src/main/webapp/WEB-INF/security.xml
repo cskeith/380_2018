@@ -28,6 +28,7 @@
     </b:bean>    
 
     <http auto-config="true">
+        <intercept-url pattern="/user/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/ticket/delete/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/ticket/**" access="hasAnyRole('USER','ADMIN')" />
         <form-login login-page="/login" authentication-failure-url="/login?error" />
@@ -41,9 +42,15 @@
 
     <b:bean id="ticketUserService" class="ouhk.comps380f.service.TicketUserService" />
 
+    <b:bean id="bCryptPasswordEncoder"
+            class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    
     <authentication-manager>
-        <authentication-provider user-service-ref="ticketUserService" />
+        <authentication-provider user-service-ref="ticketUserService">
+            <password-encoder ref="bCryptPasswordEncoder" />
+        </authentication-provider>
     </authentication-manager>
+
 
     <!-- Create default configuration for Hibernate -->
     <b:bean id="hibernateJpaVendorAdapter"
